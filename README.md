@@ -7,11 +7,11 @@ Foldings based on indents and for multiline comments.
 
 Example for JavaScript:
 
-![Example for JavaScript](master/screens/javascript.png)
+![Example for JavaScript](screens/javascript.png)
 
 Example for Python:
 
-![Example for Python](master/screens/python.png)
+![Example for Python](screens/python.png)
 
 Installation
 ------------
