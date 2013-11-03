@@ -1,0 +1,168 @@
+" Author:  Gnedov Pavel
+" License: GPLv3
+
+if !has('python')
+    echo "Error: Required vim compiled with +python"
+    finish
+endif
+
+" ##############################################################################
+
+function! TrueFoldsInit()
+python << endpython
+
+import vim
+import re
+
+try:
+	class TrueFolds:
+		# def setText( self, t ):
+		# 	self.text = t.split("\n")
+
+		def getLine( self, n ):
+			if n <= self.getLength():
+				return vim.current.buffer[n-1]
+			else:
+				return None
+	
+		def getLength(self):
+			return len( vim.current.buffer )
+	
+		def setTabSize( self, ts ):
+			self.tabSize = ts
+	
+		def setShiftWidth( self, sw ):
+			self.shiftWidth = sw
+	
+		def getSpaceSize( self, n ):
+			count = 0
+			line = self.getLine(n)
+			if line != None:
+				for symbol in line:
+					if symbol == " ":
+						count = count + 1
+					elif symbol == "\t":
+						count = count + self.tabSize
+					else:
+						break
+			return count
+
+		def getNotSpaceSymbol( self, n ):
+			count = 0
+			line = self.getLine(n)
+			if line != None:
+				for symbol in line:
+					if ( symbol == " " ) or ( symbol == "\t" ):
+						count = count + 1
+					else:
+						break
+			return count+1
+	
+		def getLevel( self, n ):
+			return ( self.getSpaceSize(n) // self.shiftWidth )
+	
+		def isEmptyLine( self, n ):
+			regexp = re.compile(".*\\w.*")
+			if ( regexp.match( self.getLine(n) ) ) or ( self.isClosedLine(n) ):
+				return False
+			else:
+				return True
+	
+		def isClosedLine( self, n ):
+			regexp = re.compile("^\\s*[\\}\\]\\)].*$")
+			if regexp.match( self.getLine(n) ):
+				return True
+			else:
+				return False
+	
+		def isCommentLine( self, n ):
+			line = self.getLine(n)
+			symbol = self.getNotSpaceSymbol(n)
+			syn = vim.eval( "synIDattr(synIDtrans(synID(" + str(n) + "," + str(symbol) + ",1)),\"name\")" )
+			if syn == "Comment":
+				return True
+			else:
+				return False
+
+		def getNextNonEmptyLine( self, n ):
+			i = n + 1
+			l = self.getLength()
+			while i < l:
+				if not( self.isEmptyLine(i) ):
+					break
+				i = i + 1
+			return i
+
+		def getPrevNonEmptyLine( self, n ):
+			i = n - 1
+			while i >= 0:
+				if not( self.isEmptyLine(i) ):
+					break
+				i = i - 1
+			if i < 0:
+				i = 0
+			return i
+	
+		def getTrueLevel( self, n ):
+			res = ""
+			prevLine     = self.getPrevNonEmptyLine(n)
+			nextLine     = self.getNextNonEmptyLine(n)
+			next2Line    = self.getNextNonEmptyLine(nextLine)
+			prevLevel    = self.getLevel( prevLine )
+			currentLevel = self.getLevel(n)
+			nextLevel    = self.getLevel( nextLine )
+			next2Level   = self.getLevel( next2Line )
+			if self.isCommentLine(n):
+				if ( self.isCommentLine(n+1) ) and ( not( self.isCommentLine(n-1) ) ):
+					res = ">" + str( currentLevel + 1 )
+				elif self.isCommentLine(n-1):
+					res = str( currentLevel + 1 )
+				else:
+					res = str(currentLevel)
+			elif self.isClosedLine(n):
+				res = str(prevLevel)
+			elif self.isEmptyLine(n):
+				if ( self.isClosedLine( nextLine ) ):
+					res = str(prevLevel)
+				else:
+					res = str( nextLevel )
+			else:
+				if ( nextLevel > currentLevel ):
+					res = ">" + str(nextLevel)
+				else:
+					res = str(currentLevel)
+			return res
+
+except Exception, e:
+	print(e)
+
+endpython
+endfunction
+
+" ##############################################################################
+
+function! TrueFoldsLevel(lnum)
+python << endpython
+import vim
+import re
+
+try:
+	vim.command("silent! call TrueFoldsInit()")
+
+	tabSize = int( vim.eval("&ts") )
+	shiftWidth = int( vim.eval("&shiftwidth") )
+	lnum = int( vim.eval("a:lnum") )
+
+	tf = TrueFolds()
+	tf.setTabSize(tabSize)
+	tf.setShiftWidth(shiftWidth)
+
+	level = tf.getTrueLevel(lnum)
+
+	vim.command( "return \"" + str(level) + "\"" )
+
+except Exception, e:
+	print(e)
+
+endpython
+endfunction
