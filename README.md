@@ -20,3 +20,8 @@ For pathogen:
 
     cd ~/.vim/bundle
     git clone https://github.com/pavel-g/TrueFolds.git
+
+License
+=======
+
+GPLv3
