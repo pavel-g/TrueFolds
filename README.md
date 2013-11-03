@@ -21,6 +21,10 @@ For pathogen:
     cd ~/.vim/bundle
     git clone https://github.com/pavel-g/TrueFolds.git
 
+Add into your .vimrc:
+
+    nmap <F12>fn :set foldenable foldmethod=expr foldexpr=TrueFoldsLevel(v:lnum)<CR>
+
 License
 =======
 
