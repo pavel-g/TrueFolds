@@ -8,7 +8,6 @@ endif
 
 " ##############################################################################
 
-function! TrueFoldsInit()
 python << endpython
 
 import vim
@@ -107,11 +106,9 @@ try:
 			res = ""
 			prevLine     = self.getPrevNonEmptyLine(n)
 			nextLine     = self.getNextNonEmptyLine(n)
-			next2Line    = self.getNextNonEmptyLine(nextLine)
 			prevLevel    = self.getLevel( prevLine )
 			currentLevel = self.getLevel(n)
 			nextLevel    = self.getLevel( nextLine )
-			next2Level   = self.getLevel( next2Line )
 			if self.isCommentLine(n):
 				if ( self.isCommentLine(n+1) ) and ( not( self.isCommentLine(n-1) ) ):
 					res = ">" + str( currentLevel + 1 )
@@ -132,12 +129,15 @@ try:
 				else:
 					res = str(currentLevel)
 			return res
-
+	
+	trueFolds = TrueFolds()
+	trueFolds.setTabSize( int( vim.eval("&ts") ) )
+	trueFolds.setShiftWidth( int( vim.eval("&shiftwidth") ) )
+	
 except Exception, e:
 	print(e)
 
 endpython
-endfunction
 
 " ##############################################################################
 
@@ -147,18 +147,8 @@ import vim
 import re
 
 try:
-	vim.command("silent! call TrueFoldsInit()")
-
-	tabSize = int( vim.eval("&ts") )
-	shiftWidth = int( vim.eval("&shiftwidth") )
 	lnum = int( vim.eval("a:lnum") )
-
-	tf = TrueFolds()
-	tf.setTabSize(tabSize)
-	tf.setShiftWidth(shiftWidth)
-
-	level = tf.getTrueLevel(lnum)
-
+	level = trueFolds.getTrueLevel(lnum)
 	vim.command( "return \"" + str(level) + "\"" )
 
 except Exception, e:
