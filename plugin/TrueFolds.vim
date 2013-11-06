@@ -156,3 +156,18 @@ except Exception, e:
 
 endpython
 endfunction
+
+" ##############################################################################
+
+function! TrueFoldsUpdateSettings()
+python << endpython
+
+try:
+	trueFolds.setTabSize( int( vim.eval("&ts") ) )
+	trueFolds.setShiftWidth( int( vim.eval("&shiftwidth") ) )
+
+except Exception, e:
+	print(e)
+
+endpython
+endfunction
