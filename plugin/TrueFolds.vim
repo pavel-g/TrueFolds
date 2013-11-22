@@ -36,12 +36,15 @@ try:
 		def getSpaceSize( self, n ):
 			count = 0
 			line = self.getLine(n)
+			nonWordSymbols = re.compile("\W")
 			if line != None:
 				for symbol in line:
 					if symbol == " ":
 						count = count + 1
 					elif symbol == "\t":
 						count = count + self.tabSize
+					elif nonWordSymbols.match(symbol):
+						continue
 					else:
 						break
 			return count
