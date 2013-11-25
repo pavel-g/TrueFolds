@@ -36,14 +36,18 @@ try:
 		def getSpaceSize( self, n ):
 			count = 0
 			line = self.getLine(n)
-			nonWordSymbols = re.compile("\W")
+			first = True
+			notSpace = re.compile("\S")
+			notWord = re.compile("\W")
 			if line != None:
 				for symbol in line:
 					if symbol == " ":
+						first = False
 						count = count + 1
 					elif symbol == "\t":
+						first = False
 						count = count + self.tabSize
-					elif nonWordSymbols.match(symbol):
+					elif notWord.match(symbol) and notSpace.match(symbol) and first:
 						continue
 					else:
 						break
