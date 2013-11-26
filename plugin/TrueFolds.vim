@@ -69,13 +69,20 @@ try:
 	
 		def isEmptyLine( self, n ):
 			regexp = re.compile(".*\\w.*")
-			if ( regexp.match( self.getLine(n) ) ) or ( self.isClosedLine(n) ):
+			if ( regexp.match( self.getLine(n) ) ) or ( self.isClosedLine(n) ) or ( self.isOpenedLine(n) ):
 				return False
 			else:
 				return True
 	
 		def isClosedLine( self, n ):
 			regexp = re.compile("^\\s*[\\}\\]\\)].*$")
+			if regexp.match( self.getLine(n) ):
+				return True
+			else:
+				return False
+
+		def isOpenedLine( self, n ):
+			regexp = re.compile("^\\s*[\\{\\[\\(]$")
 			if regexp.match( self.getLine(n) ):
 				return True
 			else:
@@ -125,6 +132,8 @@ try:
 					res = str(currentLevel)
 			elif self.isClosedLine(n):
 				res = str(prevLevel)
+			elif self.isOpenedLine(n):
+				res = ">" + str(nextLevel)
 			elif self.isEmptyLine(n):
 				if ( self.isClosedLine( nextLine ) ):
 					res = str(prevLevel)
