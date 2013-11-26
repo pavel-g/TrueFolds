@@ -120,9 +120,11 @@ try:
 			res = ""
 			prevLine     = self.getPrevNonEmptyLine(n)
 			nextLine     = self.getNextNonEmptyLine(n)
+			nextNextLine = self.getNextNonEmptyLine(nextLine)
 			prevLevel    = self.getLevel( prevLine )
 			currentLevel = self.getLevel(n)
 			nextLevel    = self.getLevel( nextLine )
+			nextNextLevel= self.getLevel( nextNextLine )
 			if self.isCommentLine(n):
 				if ( self.isCommentLine(n+1) ) and ( not( self.isCommentLine(n-1) ) ):
 					res = ">" + str( currentLevel + 1 )
@@ -133,7 +135,10 @@ try:
 			elif self.isClosedLine(n):
 				res = str(currentLevel+1)
 			elif self.isOpenedLine(n):
-				res = ">" + str(nextLevel)
+				if ( prevLevel < currentLevel ) or ( self.isClosedLine(prevLine) ):
+					res = ">" + str(nextLevel)
+				else:
+					res = str(nextLevel)
 			elif self.isEmptyLine(n):
 				if ( self.isClosedLine( nextLine ) ):
 					res = str(prevLevel)
@@ -142,6 +147,8 @@ try:
 			else:
 				if ( nextLevel > currentLevel ):
 					res = ">" + str(nextLevel)
+				elif ( ( nextLevel == currentLevel ) and ( self.isOpenedLine(nextLine) ) ):
+					res = ">" + str(nextNextLevel)
 				else:
 					res = str(currentLevel)
 			return res
