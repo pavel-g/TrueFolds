@@ -131,7 +131,7 @@ try:
 				else:
 					res = str(currentLevel)
 			elif self.isClosedLine(n):
-				res = str(prevLevel)
+				res = str(currentLevel+1)
 			elif self.isOpenedLine(n):
 				res = ">" + str(nextLevel)
 			elif self.isEmptyLine(n):
