@@ -12,11 +12,15 @@ python << endpython
 
 import vim
 import re
+import logging
 
 try:
 	class TrueFolds:
 		# def setText( self, t ):
 		# 	self.text = t.split("\n")
+
+		def __init__(self):
+			logging.basicConfig( filename='truefolds.log', level=logging.ERROR, format='%(filename)s:%(lineno)s %(levelname)s:%(message)s' )
 
 		def getLine( self, n ):
 			if n <= self.getLength():
@@ -25,7 +29,10 @@ try:
 				return None
 	
 		def getLength(self):
-			return len( vim.current.buffer )
+			try:
+				return len( vim.current.buffer )
+			except Exception, e:
+				return 0
 	
 		def setTabSize( self, ts ):
 			self.tabSize = ts
@@ -158,6 +165,7 @@ try:
 	trueFolds.setShiftWidth( int( vim.eval("&shiftwidth") ) )
 	
 except Exception, e:
+	logging.error( 'Exception at init TrueFolds: ' + e )
 	print(e)
 
 endpython
@@ -175,6 +183,7 @@ try:
 	vim.command( "return \"" + str(level) + "\"" )
 
 except Exception, e:
+	logging.error( 'Exception at TrueFoldsLevel ' + e )
 	print(e)
 
 endpython
@@ -190,6 +199,7 @@ try:
 	trueFolds.setShiftWidth( int( vim.eval("&shiftwidth") ) )
 
 except Exception, e:
+	logging.error( 'Exception at TrueFoldsUpdateSettings ' + e )
 	print(e)
 
 endpython
