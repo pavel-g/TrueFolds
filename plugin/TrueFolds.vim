@@ -3,7 +3,7 @@
 
 " ##############################################################################
 
-python << endpython
+python3 << endpython
 
 import vim
 import re
@@ -22,7 +22,7 @@ try:
 		def getLength(self):
 			try:
 				return len( vim.current.buffer )
-			except Exception, e:
+			except Exception as e:
 				return 0
 	
 		def setTabSize( self, ts ):
@@ -155,7 +155,7 @@ try:
 	trueFolds.setTabSize( int( vim.eval("&ts") ) )
 	trueFolds.setShiftWidth( int( vim.eval("&shiftwidth") ) )
 	
-except Exception, e:
+except Exception as e:
 	print(str(e))
 
 endpython
@@ -163,7 +163,7 @@ endpython
 " ##############################################################################
 
 function! TrueFoldsLevel(lnum)
-python << endpython
+python3 << endpython
 import vim
 import re
 
@@ -172,7 +172,7 @@ try:
 	level = trueFolds.getTrueLevel(lnum)
 	vim.command( "return \"" + str(level) + "\"" )
 
-except Exception, e:
+except Exception as e:
 	print(str(e))
 
 endpython
@@ -181,13 +181,13 @@ endfunction
 " ##############################################################################
 
 function! TrueFoldsUpdateSettings()
-python << endpython
+python3 << endpython
 
 try:
 	trueFolds.setTabSize( int( vim.eval("&ts") ) )
 	trueFolds.setShiftWidth( int( vim.eval("&shiftwidth") ) )
 
-except Exception, e:
+except Exception as e:
 	print(str(e))
 
 endpython
